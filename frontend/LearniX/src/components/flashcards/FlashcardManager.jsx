@@ -99,7 +99,21 @@ const FlashcardManager = ({ documentId }) => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = async () => {};
+  const handleConfirmDelete = async () => {
+    if (!setToDelete) return;
+    setDeleting(true);
+    try {
+      await flashcardService.deleteFlashcardSet(setToDelete._id);
+      toast.success("Flashcard set deleted successfully!");
+      setIsDeleteModalOpen(false);
+      setSetToDelete(null);
+      fetchFlashcardSets();
+    } catch (error) {
+      toast.error(error.message || "Failed to delete flashcard set.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const handleSelectedSet = (set) => {
     setSelectedSet(set);
