@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import quizService from "../../services/quizService";
 import aiService from "../../services/aiService";
 import Spinner from "../common/Spinner";
@@ -57,7 +57,21 @@ const QuizManager = ({ documentId }) => {
     setIsDeleteModalOpen(true);
   };
 
-  const handleConfirmDelete = async () => {};
+  const handleConfirmDelete = async () => {
+    if (!selectedQuiz) return;
+    setDeleting(true);
+    try {
+      await quizService.deleteQuiz(selectedQuiz._id);
+      toast.success(`'${selectedQuiz.title || "Quiz"}' deleted`);
+      setIsDeleteModalOpen(false);
+      setSelectedQuizOpen(null);
+      setQuizzes(quizzes.filter((q) => q._id !== selectedQuiz._id));
+    } catch (error) {
+      toast.error(error.message || "Failed to delete quiz.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const renderQuizContent = () => {
     if (loading) {
