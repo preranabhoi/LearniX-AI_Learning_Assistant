@@ -96,6 +96,44 @@ const QuizManager = ({ documentId }) => {
       </div>
 
       {renderQuizContent()}
+
+      {/* Generate Quiz */}
+      <Modal
+        isOpen={isGenerateModalOpen}
+        onClose={() => setIsGenerateModalOpen(false)}
+        title="Generate New Quiz"
+      >
+        <form onSubmit={handleGenerateQuiz} className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-neutral-700 mb-1.5">
+              Number of Questions
+            </label>
+            <input
+              type="number"
+              value={numQuestions}
+              onChange={(e) =>
+                setNumQuestions(Math.max(1, parseInt(e.target.value) || 1))
+              }
+              min="1"
+              required
+              className="w-full h-9 px-3 border border-neutral-200 rounded-lg bg-white text-sm text-neutral-400 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-[#00d492] focus:border-transparent"
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              varient="secondary"
+              onClick={() => setIsGenerateModalOpen(false)}
+              disabled={generating}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={generating}>
+              {generating ? "Generating..." : "Generate"}
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };
