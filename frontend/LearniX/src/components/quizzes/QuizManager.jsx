@@ -134,6 +134,40 @@ const QuizManager = ({ documentId }) => {
           </div>
         </form>
       </Modal>
+
+      {/* Delete Confirmation */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Confirm Delete Quiz"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-neutral-600">
+            Are you sure you want to delete the quiz:{" "}
+            <span className="font-semibold text-neutral-900">
+              {selectedQuiz?.title || "this quiz"}
+            </span>
+            ? This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              varient="outline"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmDelete}
+              disabled={deleting}
+              className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
