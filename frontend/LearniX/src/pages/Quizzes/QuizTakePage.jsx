@@ -50,7 +50,30 @@ const QuizTakePage = () => {
     }
   };
 
-  const handleSubmitQuiz = async () => {};
+  const handleSubmitQuiz = async () => {
+    setSubmitting(true);
+    try {
+      const formattedAnswers = Object.keys(selectedAnswers).map(
+        (questionId) => {
+          const question = quiz.questions.find((q) => q._id === questionId);
+          const questionIndex = quiz.questions.findIndex(
+            (q) => q._id === questionId
+          );
+          const optionIndex = selectedAnswers[questionId];
+          const selectedAnswers = question.options[optionIndex];
+          return { questionIndex, selectedAnswers };
+        }
+      );
+
+      await quizService.submitQuiz(quizId, formattedAnswers);
+      toast.success("Quiz submitted successfully!");
+      navigate(`/quizzes/${quizId}/results`);
+    } catch (error) {
+      toast.error(error.message || "Failed to submit quiz.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (loading) {
     return (
