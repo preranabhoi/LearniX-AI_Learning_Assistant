@@ -128,7 +128,36 @@ const FlashcardPage = () => {
     }
 
     const currentCard = flashcards[currentCardIndex];
+
+    return (
+      <div className="flex flex-col items-center space-y-6">
+        <div className="w-full max-w-md">
+          <Flashcard flashcard={currentCard} onToggleStar={handleToggleStar} />
+        </div>
+        <div className="flex items-center gap-4">
+          <Button
+            onClick={handlePrevCard}
+            varient="secondary"
+            disabled={flashcards.length <= 1}
+          >
+            <ChevronLeft size={16} /> Previous
+          </Button>
+          <span className="text-sm text-natural-600">
+            {currentCardIndex + 1}/{flashcards.length}
+          </span>
+          <Button
+            onClick={handleNextCard}
+            varient="secondary"
+            disabled={flashcards.length <= 1}
+          >
+            Next <ChevronRight size={16} />
+          </Button>
+        </div>
+      </div>
+    );
   };
+
+  return <div>FlashcardPage</div>;
 };
 
 export default FlashcardPage;
