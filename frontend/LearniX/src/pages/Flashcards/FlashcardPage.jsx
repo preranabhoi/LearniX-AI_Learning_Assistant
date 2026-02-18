@@ -157,7 +157,76 @@ const FlashcardPage = () => {
     );
   };
 
-  return <div>FlashcardPage</div>;
+  return (
+    <div>
+      <div className="mb-4">
+        <Link
+          to={`/documents/${documentId}`}
+          className="inline-flex items-center gap-2 text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
+        >
+          <ArrowLeft size={16} />
+          Back to Document
+        </Link>
+      </div>
+      <PageHeader title="Flashcards">
+        <div className="flex gap-2">
+          {!loading &&
+            (flashcards.length > 0 ? (
+              <>
+                <Button
+                  onClick={() => setIsDeleteModalOpen(true)}
+                  disabled={deleting}
+                >
+                  <Trash2 size={16} /> Delete Set
+                </Button>
+              </>
+            ) : (
+              <Button onClick={handleGenerateFlashcards} disabled={generating}>
+                {generating ? (
+                  <Spinner />
+                ) : (
+                  <>
+                    <Plus size={16} /> Generate Flashcards
+                  </>
+                )}
+              </Button>
+            ))}
+        </div>
+      </PageHeader>
+
+      {renderFlashcardContent()}
+
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Confirm Delete Flashcard Set"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-neutral-600">
+            Are you sure you want to delete all flashcards for this document ?
+            This action cannot be undone.
+          </p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button
+              type="button"
+              varient="secondary"
+              onClick={() => setIsDeleteModalOpen(false)}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteFlashcardSet}
+              disabled={deleting}
+              className="bg-red-500 hover:bg-red-600 active:bg-red-700 focus:ring-red-500"
+            >
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
 };
 
 export default FlashcardPage;
