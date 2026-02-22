@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import authService from "../../services/authService";
-import { BrainCircuit, Mail, Lock, ArrowRight } from "lucide-react";
+import { BrainCircuit, Mail, Lock, ArrowRight, User } from "lucide-react";
 import toast from "react-hot-toast";
 
 const RegisterPage = () => {
@@ -42,7 +42,7 @@ const RegisterPage = () => {
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] opacity-30" />
 
       <div className="relative w-full max-w-md px-6">
-        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-100">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8">
           {/*Header*/}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-12 h-14 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/25 mb-6">
@@ -65,8 +65,11 @@ const RegisterPage = () => {
               </label>
               <div className="relative group">
                 <div
-                  className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${(focusedField =
-                    "username" ? "text-emerald-500" : "text-slate-400")}`}
+                  className={`absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors duration-200 ${
+                    focusedField === "username"
+                      ? "text-emerald-500"
+                      : "text-slate-400"
+                  }`}
                 >
                   <User className="h-5 w-5" strokeWidth={2} />
                 </div>
@@ -179,7 +182,7 @@ const RegisterPage = () => {
                 to="/login"
                 className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors duration-200"
               >
-                Sign up
+                Sign in
               </Link>
             </p>
           </div>

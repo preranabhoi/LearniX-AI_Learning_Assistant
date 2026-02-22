@@ -59,7 +59,7 @@ const port = process.env.PORT || 8000;
 
 app.listen(port, () => {
   console.log(
-    `Example app listening on port ${process.env.NODE_ENV} mode on port ${PORT}`
+    `Example app listening on port ${process.env.NODE_ENV || "development"} mode on port ${port}`
   );
 });
 

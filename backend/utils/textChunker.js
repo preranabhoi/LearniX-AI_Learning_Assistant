@@ -5,6 +5,20 @@
  * @returns {Array<{content:string,chunIndex:number,pageNumber:number}>}
  */
 
+import fs from "fs";
+import * as pdf from "pdf-parse";
+
+export const extractTextFromPDF = async (filePath) => {
+  if (!filePath) {
+    throw new Error("PDF file path is required");
+  }
+
+  const buffer = fs.readFileSync(filePath);
+  const data = await pdf.default(buffer);
+
+  return data.text || "";
+};
+
 export const chunkText = (text, chunkSize = 500, overlap = 50) => {
   if (!text || text.trim().length === 0) {
     return [];

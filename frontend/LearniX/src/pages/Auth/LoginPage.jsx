@@ -39,13 +39,13 @@ const LoginPage = () => {
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] opacity-30" />
 
       <div className="relative w-full max-w-md px-6">
-        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-100">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-8 md:p-10">
           {/*Header*/}
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center w-12 h-14 rounded-2xl bg-linear-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/25 mb-6">
               <BrainCircuit className="w-7 h-7 text-white" strokeWidth={2} />
             </div>
-            <h1 className="text-2xl fone-medium text-slate-900 tracking-tight mb-2">
+            <h1 className="text-2xl font-medium text-slate-900 tracking-tight mb-2">
               Welcome Back
             </h1>
             <p className="text-slate-500 text-sm">
