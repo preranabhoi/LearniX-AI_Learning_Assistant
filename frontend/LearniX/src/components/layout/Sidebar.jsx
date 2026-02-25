@@ -44,8 +44,8 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
       >
         {/* Logo and close button for mobile */}
         <div className="flex items-center justify-between h-16 px-5 border-b border-slate-200/60">
-          <div className="flex items-center gap">
-            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-linear-to-br from-emerald-400  to teal-500 shadow-md shadow-emerald-500/20">
+          <div className="flex items-center gap-2">
+            <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-linear-to-br from-emerald-400  to-teal-500 shadow-md shadow-emerald-500/20">
               <BrainCircuit
                 className="text-white"
                 size={20}
@@ -102,9 +102,10 @@ const Sidebar = ({ isSidebarOpen, toggleSidebar }) => {
             className="group flex items-center gap-3 w-full px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all duration-200"
           >
             <LogOut
-              sixe={18}
+              size={18}
               strokeWidth={2.5}
-              className="trnasition-transform duration-200 group-hover:scale-110"
+              className="transition-transform
+ duration-200 group-hover:scale-110"
             />
             Logout
           </button>

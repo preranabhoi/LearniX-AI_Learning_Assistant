@@ -11,7 +11,7 @@ const Header = ({ toggleSidebar }) => {
         {/* Mobile Menu Button */}
         <button
           onClick={toggleSidebar}
-          className="md:hidden inline-flex items-center justify-center w-10 h-10 text-slate-600 hover:text-slate-900 rounded-xl trnasition-all duration-200"
+          className="md:hidden inline-flex items-center justify-center w-10 h-10 text-slate-600 hover:text-slate-900 rounded-xl transition-all duration-200"
           aria-label="Toggle sidebar"
         >
           <Menu size={24} />

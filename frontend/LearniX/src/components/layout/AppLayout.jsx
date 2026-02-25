@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 
-const AppLayout = ({ childern }) => {
+const AppLayout = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
@@ -15,7 +15,7 @@ const AppLayout = ({ childern }) => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header toggleSidebar={toggleSidebar} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto p-6">
-          {childern}
+          {children}
         </main>
       </div>
     </div>
