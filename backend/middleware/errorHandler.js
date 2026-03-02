@@ -2,7 +2,7 @@ const errorHandler = (err, req, res, next) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || "Server Error";
 
-  if (err.name == "CastError") {
+  if (err.name === "CastError") {
     message = "Resource not found";
     statusCode = 404;
   }
@@ -31,19 +31,16 @@ const errorHandler = (err, req, res, next) => {
   }
 
   if (err.name === "TokenExpiredError") {
-    (message = "Token Expired"), (statusCode = 401);
+    message = "Token Expired";
+    statusCode = 401;
   }
 
-  console.error("Error:", {
-    message: err.message,
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined,
-  });
+  console.error("Error:", err);
 
   res.status(statusCode).json({
     success: false,
     error: message,
-    statusCode,
-    ...err(process.env.NODE_ENV === "development" && { stack: err.stack }),
+    ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 };
 
