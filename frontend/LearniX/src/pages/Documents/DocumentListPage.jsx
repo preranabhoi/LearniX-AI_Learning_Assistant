@@ -309,7 +309,7 @@ const DocumentListPage = () => {
           </p>
 
           {/* Action Buttons */}
-          <div className="flex-gap-3">
+          <div className="flex gap-3">
             <button
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
