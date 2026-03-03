@@ -21,7 +21,7 @@ const Button = ({
   };
 
   const sizeStyles = {
-    sm: "h-9 px-4 text-xs",
+    sm: "h-10 px-4 text-sm",
     md: "h-11 px-5 text-sm",
   };
 

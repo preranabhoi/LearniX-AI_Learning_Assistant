@@ -34,8 +34,15 @@ const FlashcardPage = () => {
       const response = await flashcardService.getFlashcardsForDocument(
         documentId
       );
-      setFlashcardSets(response.data[0]);
-      setFlashcards(response.data[0]?.cards || []);
+      const sets = response.data.data || [];
+
+      if (sets.length > 0) {
+        setFlashcardSets(sets[0]);
+        setFlashcards(sets[0].cards || []);
+      } else {
+        setFlashcardSets(null);
+        setFlashcards([]);
+      }
     } catch (error) {
       toast.error("Failed to fetch flashcards.");
       console.error(error);

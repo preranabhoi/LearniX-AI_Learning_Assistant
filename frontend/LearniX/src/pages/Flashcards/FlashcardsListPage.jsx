@@ -17,7 +17,7 @@ const FlashcardsListPage = () => {
 
         console.log("fetchFlashcardSets___", response.data);
 
-        setFlashcardSets(response.data);
+        setFlashcardSets(response.data.data);
       } catch (error) {
         toast.error("Failed to fetch flashcard sets.");
         console.error(error);
@@ -30,10 +30,14 @@ const FlashcardsListPage = () => {
 
   const renderContent = () => {
     if (loading) {
+      return <Spinner />;
+    }
+
+    if (!flashcardSets || flashcardSets.length === 0) {
       return (
         <EmptyState
           title="No Flashcard Sets Found"
-          description="You haven't generated any flashcards yet. GO to document to create your first set."
+          description="You haven't generated any flashcards yet. Go to a document to create your first set."
         />
       );
     }
