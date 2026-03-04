@@ -175,7 +175,7 @@ export const chat = async (req, res, next) => {
       });
     }
 
-    const relevantChunks = findRelevantChunks(document, chunks, question, 3);
+    const relevantChunks = findRelevantChunks(document.chunks, question, 3);
     const chunkIndices = relevantChunks.map((c) => c.chunkIndex);
 
     let chatHistory = await ChatHistory.findOne({
@@ -296,13 +296,14 @@ export const getChatHistory = async (req, res, next) => {
         data: [],
         message: "No chat history found for this document",
       });
-
-      res.status(200).json({
-        success: true,
-        data: chatHistory.messages,
-        message: "Chat history retrieved successfully",
-      });
     }
+    
+    res.status(200).json({
+      success: true,
+      data: chatHistory.messages,
+      message: "Chat history retrieved successfully",
+    });
+       
   } catch (error) {
     next(error);
   }
