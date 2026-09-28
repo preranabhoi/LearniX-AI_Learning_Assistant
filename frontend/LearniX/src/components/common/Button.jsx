@@ -1,6 +1,7 @@
 import React from "react";
 
 const Button = ({
+  children,
   childern,
   onClick,
   type = "button",
@@ -10,7 +11,7 @@ const Button = ({
   size = "md",
 }) => {
   const baseStyles =
-    "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active-scale-100 whitespace-nowrap";
+    "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 whitespace-nowrap";
 
   const varientStyles = {
     primary:
@@ -37,7 +38,7 @@ const Button = ({
         className,
       ].join(" ")}
     >
-      {childern}
+      {children || childern}
     </button>
   );
 };

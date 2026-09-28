@@ -37,6 +37,23 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Health check routes
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "LearniX AI Learning Assistant API is running",
+    timestamp: new Date().toISOString(),
+  });
+});
+
+app.get("/api/health", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
 //routes
 app.use("/api/auth", authRoutes);
 app.use("/api/document", documentRoutes);
@@ -57,13 +74,19 @@ app.use((req, res) => {
 
 const port = process.env.PORT || 8000;
 
-app.listen(port, () => {
-  console.log(
-    `Example app listening on port ${process.env.NODE_ENV || "development"} mode on port ${port}`
-  );
-});
+if (process.env.NODE_ENV !== "test" && !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(
+      `LearniX server running in ${process.env.NODE_ENV || "development"} mode on port ${port}`
+    );
+  });
+}
 
 process.on("unhandledRejection", (err) => {
   console.error(`Error:${err.message}`);
-  process.exit(1);
+  if (!process.env.VERCEL) {
+    process.exit(1);
+  }
 });
+
+export default app;

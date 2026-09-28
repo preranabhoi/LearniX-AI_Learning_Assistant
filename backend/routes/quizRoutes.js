@@ -12,8 +12,8 @@ const router = express.Router();
 
 router.use(protect);
 
+router.get("/quiz/:id", getQuizById);
 router.get("/:documentId", getQuizzes);
-router.get("/:quiz/:id", getQuizById);
 router.post("/:id/submit", submitQuiz);
 router.get("/:id/results", getQuizResults);
 router.delete("/:id", deleteQuiz);

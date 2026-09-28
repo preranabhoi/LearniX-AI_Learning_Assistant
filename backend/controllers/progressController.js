@@ -42,7 +42,7 @@ export const getDashboard = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .limit(5)
       .populate("documentId", "title")
-      .select("title score totalQuestions completedAt");
+      .select("title score totalQuestions completedAt createdAt");
 
     const studyStreak = Math.floor(Math.random() * 7) + 1;
 

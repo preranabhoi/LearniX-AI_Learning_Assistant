@@ -154,7 +154,8 @@ export const getQuizResults = async (req, res, next) => {
         questionIndex: index,
         question: question.question,
         options: question.options,
-        correctAnswer: userAnswer?.selectedAnswer || null,
+        selectedAnswer: userAnswer?.selectedAnswer || null,
+        correctAnswer: question.correctAnswer,
         isCorrect: userAnswer?.isCorrect || false,
         explanation: question.explanation,
       };
@@ -166,7 +167,7 @@ export const getQuizResults = async (req, res, next) => {
         quiz: {
           id: quiz._id,
           title: quiz.title,
-          document: quiz.document,
+          document: quiz.documentId,
           score: quiz.score,
           totalQuestions: quiz.totalQuestions,
           completedAt: quiz.completedAt,

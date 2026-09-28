@@ -142,5 +142,7 @@ export const deleteFlashcardSet = async (req, res, next) => {
       success: true,
       message: "Flashcard set deleted successfully",
     });
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };

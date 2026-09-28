@@ -1,22 +1,22 @@
-/**
- * @param {string} text
- * @param {number} chunkSize
- * @param {number} overlap
- * @returns {Array<{content:string,chunIndex:number,pageNumber:number}>}
- */
-
 import fs from "fs";
-import * as pdf from "pdf-parse";
+import { PDFParse } from "pdf-parse";
 
 export const extractTextFromPDF = async (filePath) => {
-  if (!filePath) {
-    throw new Error("PDF file path is required");
+  try {
+    console.log("Reading PDF from:", filePath);
+
+    const buffer = fs.readFileSync(filePath);
+    const parser = new PDFParse({ data: buffer });
+    const data = await parser.getText();
+    const text = data?.text || (typeof data === "string" ? data : "");
+
+    console.log("PDF parsed successfully, length:", text.length);
+
+    return text || "";
+  } catch (error) {
+    console.error("PDF PARSE ERROR:", error);
+    throw error;
   }
-
-  const buffer = fs.readFileSync(filePath);
-  const data = await pdf.default(buffer);
-
-  return data.text || "";
 };
 
 export const chunkText = (text, chunkSize = 500, overlap = 50) => {
@@ -26,7 +26,7 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
 
   const cleanedText = text
     .replace(/\r\n/g, "\n")
-    .replace(/\s+/g, "")
+    .replace(/\s+/g, " ")
     .replace(/\n /g, "\n")
     .replace(/ \n/g, "\n")
     .trim();
@@ -46,7 +46,7 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
 
     if (paragraphWordCount > chunkSize) {
       if (currentChunk.length > 0) {
-        chunkIndex.push({
+        chunks.push({
           content: currentChunk.join("\n\n"),
           chunkIndex: chunkIndex++,
           pageNumber: 0,
@@ -104,7 +104,7 @@ export const chunkText = (text, chunkSize = 500, overlap = 50) => {
     for (let i = 0; i < allWords.length; i += chunkSize - overlap) {
       const chunkWords = allWords.slice(i, i + chunkSize);
       chunks.push({
-        content: currentChunk.join(" "),
+        content: chunkWords.join(" "),
         chunkIndex: chunkIndex++,
         pageNumber: 0,
       });
@@ -159,7 +159,7 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
   if (queryWords.length === 0) {
     return chunks.slice(0, maxChunks).map((chunk) => ({
       content: chunk.content,
-      chunIndex: chunk.chunIndex,
+      chunkIndex: chunk.chunkIndex,
       pageNumber: chunk.pageNumber,
       _id: chunk._id,
     }));
@@ -197,7 +197,7 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
 
     return {
       content: chunk.content,
-      chunIndex: chunk.chunIndex,
+      chunkIndex: chunk.chunkIndex,
       pageNumber: chunk.pageNumber,
       _id: chunk._id,
       score: normalizedScore * positionBonus,
@@ -215,7 +215,7 @@ export const findRelevantChunks = (chunks, query, maxChunks = 3) => {
       if (b.matchedWords !== a.matchedWords) {
         return b.matchedWords - a.matchedWords;
       }
-      return a.chunIndex - b.chunIndex;
+      return a.chunkIndex - b.chunkIndex;
     })
     .slice(0, maxChunks);
 };

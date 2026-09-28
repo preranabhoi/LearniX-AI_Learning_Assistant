@@ -3,7 +3,49 @@ import Flashcard from "../models/Flashcard.js";
 import Quiz from "../models/Quiz.js";
 import ChatHistory from "../models/ChatHistory.js";
 import * as geminiService from "../utils/geminiService.js";
-import { findRelevantChunks } from "../utils/textChunker.js";
+import { findRelevantChunks, chunkText, extractTextFromPDF } from "../utils/textChunker.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const getReadyDocument = async (documentId, userId) => {
+  const document = await Document.findOne({
+    _id: documentId,
+    userId: userId,
+  });
+
+  if (!document) return null;
+
+  if (document.status !== "ready" || !document.extractedText) {
+    if (document.filePath) {
+      const storedFileName = path.basename(document.filePath);
+      const localFilePath = path.join(__dirname, "../uploads/documents", storedFileName);
+      try {
+        const text = await extractTextFromPDF(localFilePath);
+        if (text && text.trim().length > 0) {
+          const chunks = chunkText(text, 500, 50);
+          document.extractedText = text;
+          document.chunks = chunks;
+          document.status = "ready";
+          await document.save();
+          return document;
+        }
+      } catch (err) {
+        console.error("On-the-fly PDF extraction failed:", err);
+      }
+    }
+    if (document.extractedText && document.extractedText.trim().length > 0) {
+      document.status = "ready";
+      await document.save();
+      return document;
+    }
+    return null;
+  }
+
+  return document;
+};
 
 export const generateFlashcards = async (req, res, next) => {
   try {
@@ -13,15 +55,11 @@ export const generateFlashcards = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         error: "Please provide documentId",
-        ststusCode: 400,
+        statusCode: 400,
       });
     }
 
-    const document = await Document.findOne({
-      _id: documentId,
-      userId: req.user._id,
-      status: "ready",
-    });
+    const document = await getReadyDocument(documentId, req.user._id);
 
     if (!document) {
       return res.status(404).json({
@@ -66,15 +104,11 @@ export const generateQuiz = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         error: "Please provide documentId",
-        ststusCode: 400,
+        statusCode: 400,
       });
     }
 
-    const document = await Document.findOne({
-      _id: documentId,
-      userId: req.user._id,
-      status: "ready",
-    });
+    const document = await getReadyDocument(documentId, req.user._id);
 
     if (!document) {
       return res.status(404).json({
@@ -117,14 +151,10 @@ export const generateSummary = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         error: "Please provide documentId",
-        ststusCode: 400,
+        statusCode: 400,
       });
     }
-    const document = await Document.findOne({
-      _id: documentId,
-      userId: req.user._id,
-      status: "ready",
-    });
+    const document = await getReadyDocument(documentId, req.user._id);
 
     if (!document) {
       return res.status(404).json({
@@ -153,29 +183,41 @@ export const generateSummary = async (req, res, next) => {
 export const chat = async (req, res, next) => {
   try {
     const { documentId, question } = req.body;
+
     if (!documentId || !question) {
       return res.status(400).json({
         success: false,
         error: "Please provide documentId and question",
-        statusCode: 400,
       });
     }
 
-    const document = await Document.findOne({
-      _id: documentId,
-      userId: req.user._id,
-      status: "ready",
-    });
+    const document = await getReadyDocument(documentId, req.user._id);
 
     if (!document) {
       return res.status(404).json({
         success: false,
         error: "Document not found or not ready",
-        statusCode: 404,
       });
     }
 
-    const relevantChunks = findRelevantChunks(document.chunks, question, 3);
+    let relevantChunks = [];
+
+    if (document.chunks && document.chunks.length > 0) {
+      relevantChunks = findRelevantChunks(document.chunks, question, 3);
+    } else {
+      relevantChunks = [
+        {
+          content: document.extractedText.substring(0, 3000),
+          chunkIndex: 0,
+        },
+      ];
+    }
+
+    const answer = await geminiService.chatWithContext(
+      question,
+      relevantChunks
+    );
+
     const chunkIndices = relevantChunks.map((c) => c.chunkIndex);
 
     let chatHistory = await ChatHistory.findOne({
@@ -184,24 +226,18 @@ export const chat = async (req, res, next) => {
     });
 
     if (!chatHistory) {
-      chatHistory = await ChatHistory.create({
+      chatHistory = new ChatHistory({
         userId: req.user._id,
         documentId: document._id,
         messages: [],
       });
     }
 
-    const answer = await geminiService.chatWithContext(
-      question,
-      relevantChunks
-    );
-
     chatHistory.messages.push(
       {
         role: "user",
         content: question,
         timestamp: new Date(),
-        relevantChunks: [],
       },
       {
         role: "assistant",
@@ -219,9 +255,7 @@ export const chat = async (req, res, next) => {
         question,
         answer,
         relevantChunks: chunkIndices,
-        chatHistoryId: chatHistory._id,
       },
-      message: "Response generated successfully",
     });
   } catch (error) {
     next(error);
@@ -240,11 +274,7 @@ export const explainConcept = async (req, res, next) => {
       });
     }
 
-    const document = await Document.findOne({
-      _id: documentId,
-      userId: req.user._id,
-      status: "ready",
-    });
+    const document = await getReadyDocument(documentId, req.user._id);
 
     if (!document) {
       return res.status(404).json({
@@ -254,7 +284,19 @@ export const explainConcept = async (req, res, next) => {
       });
     }
 
-    const relevantChunks = findRelevantChunks(document.chunks, concept, 3);
+    let relevantChunks = [];
+
+    if (document.chunks && document.chunks.length > 0) {
+      relevantChunks = findRelevantChunks(document.chunks, concept, 3);
+    } else {
+      relevantChunks = [
+        {
+          content: document.extractedText.substring(0, 3000),
+          chunkIndex: 0,
+        },
+      ];
+    }
+
     const context = relevantChunks.map((c) => c.content).join("\n\n");
 
     const explanation = await geminiService.explainConcept(concept, context);
@@ -263,7 +305,7 @@ export const explainConcept = async (req, res, next) => {
       success: true,
       data: {
         concept,
-        explaination,
+        explanation,
         relevantChunks: relevantChunks.map((c) => c.chunkIndex),
       },
       message: "Explanation generated successfully",
@@ -281,7 +323,7 @@ export const getChatHistory = async (req, res, next) => {
       return res.status(400).json({
         success: false,
         error: "Please provide documentId",
-        ststusCode: 400,
+        statusCode: 400,
       });
     }
 
@@ -297,13 +339,12 @@ export const getChatHistory = async (req, res, next) => {
         message: "No chat history found for this document",
       });
     }
-    
+
     res.status(200).json({
       success: true,
       data: chatHistory.messages,
       message: "Chat history retrieved successfully",
     });
-       
   } catch (error) {
     next(error);
   }

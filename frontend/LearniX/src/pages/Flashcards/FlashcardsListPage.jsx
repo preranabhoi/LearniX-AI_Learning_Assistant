@@ -15,9 +15,10 @@ const FlashcardsListPage = () => {
       try {
         const response = await flashcardService.getAllFlashcardSets();
 
-        console.log("fetchFlashcardSets___", response.data);
-
-        setFlashcardSets(response.data.data);
+        const sets = Array.isArray(response.data)
+          ? response.data
+          : response.data?.data || [];
+        setFlashcardSets(sets);
       } catch (error) {
         toast.error("Failed to fetch flashcard sets.");
         console.error(error);

@@ -60,8 +60,8 @@ const QuizTakePage = () => {
             (q) => q._id === questionId
           );
           const optionIndex = selectedAnswers[questionId];
-          const selectedAnswers = question.options[optionIndex];
-          return { questionIndex, selectedAnswers };
+          const selectedAnswer = question?.options?.[optionIndex] || "";
+          return { questionIndex, selectedAnswer };
         }
       );
 

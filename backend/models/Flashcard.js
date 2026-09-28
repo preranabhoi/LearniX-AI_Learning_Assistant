@@ -27,7 +27,7 @@ const flashcardSchema = new mongoose.Schema(
           enum: ["easy", "medium", "hard"],
           default: "medium",
         },
-        laseReviewed: {
+        lastReviewed: {
           type: Date,
           default: null,
         },
@@ -47,7 +47,7 @@ const flashcardSchema = new mongoose.Schema(
   }
 );
 
-flashcardSchema.index({ userId: 1, documentsId: 1 });
+flashcardSchema.index({ userId: 1, documentId: 1 });
 
 const Flashcard = mongoose.model("Flashcard", flashcardSchema);
 

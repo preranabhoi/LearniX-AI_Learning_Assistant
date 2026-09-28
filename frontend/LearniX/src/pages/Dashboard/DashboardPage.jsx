@@ -141,7 +141,7 @@ const DashboardPage = () => {
                 ...(dashboardData.recentActivity.quizzes || []).map((quiz) => ({
                   id: quiz._id,
                   description: quiz.title,
-                  timestamp: quiz.lastAttempted,
+                  timestamp: quiz.completedAt || quiz.createdAt,
                   link: `/quizzes/${quiz._id}`,
                   type: "quiz",
                 })),

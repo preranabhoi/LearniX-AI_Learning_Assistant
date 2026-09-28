@@ -11,7 +11,7 @@ export const register = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
-    const userExists = await User.findOne({ $or: [{ email }] });
+    const userExists = await User.findOne({ $or: [{ email }, { username }] });
 
     if (userExists) {
       return res.status(400).json({
@@ -152,17 +152,17 @@ export const changePassword = async (req, res, next) => {
   try {
     const{currentPassword, newPassword}=req.body
 
-    if(!changePassword||!newPassword){
-        return res.status(400).json({
-            success:false,
-            error:'Please provide current and new password',
-            statusCode:400,
-        })
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide current and new password",
+        statusCode: 400,
+      });
     }
 
-    const user=await User.findById(req.user._id).select('+password')
+    const user = await User.findById(req.user._id).select("+password");
 
-    const isMatch=await user.matchPassword(changePassword)
+    const isMatch = await user.matchPassword(currentPassword);
 
     if(!isMatch){
         return res.status(401).json({

@@ -6,6 +6,7 @@ import aiService from "../../services/aiService";
 import Spinner from "../common/Spinner";
 import Button from "../common/Button";
 import Modal from "../common/Modal";
+import EmptyState from "../common/EmptyState";
 import QuizCard from "./QuizCard";
 
 const QuizManager = ({ documentId }) => {
@@ -89,13 +90,13 @@ const QuizManager = ({ documentId }) => {
 
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {quizzes.map((quiz) => {
+        {quizzes.map((quiz) => (
           <QuizCard
             key={quiz._id}
             quiz={quiz}
             onDelete={handleDeleteRequest}
-          />;
-        })}
+          />
+        ))}
       </div>
     );
   };

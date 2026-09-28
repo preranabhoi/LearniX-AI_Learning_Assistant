@@ -34,7 +34,9 @@ const FlashcardPage = () => {
       const response = await flashcardService.getFlashcardsForDocument(
         documentId
       );
-      const sets = response.data.data || [];
+      const sets = Array.isArray(response.data)
+        ? response.data
+        : response.data?.data || [];
 
       if (sets.length > 0) {
         setFlashcardSets(sets[0]);
