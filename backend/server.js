@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import mongoose from "mongoose";
 import db from "./config/db.js";
 import errorHandler from "./middleware/errorHandler.js";
 
@@ -35,23 +36,36 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// Health check routes
+// Health check routes (immediate response for diagnostics)
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "LearniX AI Learning Assistant API is running",
+    dbConnected: mongoose.connection.readyState === 1,
+    environment: process.env.NODE_ENV || "development",
     timestamp: new Date().toISOString(),
   });
 });
 
 app.get("/api/health", (req, res) => {
+  const dbState = mongoose.connection.readyState;
+  const dbStatusMap = { 0: "disconnected", 1: "connected", 2: "connecting", 3: "disconnecting" };
   res.status(200).json({
     status: "ok",
+    database: dbStatusMap[dbState] || "unknown",
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });
+});
+
+// Serverless DB connection middleware
+app.use(async (req, res, next) => {
+  try {
+    await db();
+  } catch (err) {
+    console.error("Database connection middleware error:", err.message);
+  }
+  next();
 });
 
 //routes
