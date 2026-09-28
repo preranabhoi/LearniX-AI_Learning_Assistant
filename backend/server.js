@@ -36,8 +36,16 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+// Normalize URL in case Vercel rewrites prepend /api/index.js
+app.use((req, res, next) => {
+  if (req.url.startsWith("/api/index.js")) {
+    req.url = req.url.replace(/^\/api\/index\.js/, "") || "/";
+  }
+  next();
+});
+
 // Health check routes (immediate response for diagnostics)
-app.get("/", (req, res) => {
+app.get(["/", "/api", "/api/index.js"], (req, res) => {
   res.status(200).json({
     success: true,
     message: "LearniX AI Learning Assistant API is running",
