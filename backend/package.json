@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@google/genai": "^1.36.0",
+    "@napi-rs/canvas": "^1.0.9",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
